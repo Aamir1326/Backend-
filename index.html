@@ -3,12 +3,12 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Support Us – Together We Grow</title>
 <link rel="stylesheet" href="style.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head><body>
 <nav class="side" id="side">
  <div class="logo"><div style="font-size:44px">💜</div><b>Support Us</b><small>Together We Grow</small></div>
  <a href="index.html" class="on">🏠 Home</a>
- <a href="Ai.html">🤖 Talk with AI</a>
+ <a href="AI.html">🤖 Talk with AI</a>
  <button class="nav" id="share">🔗 Share</button>
  <a href="privacy.html">🛡️ Privacy Policy</a>
  <button class="nav" data-info="about">ℹ️ About</button>
@@ -54,22 +54,16 @@
  </div></section>
  <section class="page" id="p4"><div class="card">
    <h2><span class="num">4</span>Choose Payment Method</h2>
+   <div class="row"><label for="amount">₹ Amount</label><input id="amount" type="number" min="1" step="1" inputmode="decimal" placeholder="Enter amount"></div>
    <div class="pays">
-    <a class="pay" id="gpay" href="#"><i style="color:#4285f4">G</i>GPay</a>
-    <a class="pay" id="paytm" href="#"><i style="color:#00baf2;font-size:22px">Paytm</i>Paytm</a>
-    <a class="pay" id="upi" href="#"><i>🔗</i>UPI Link</a>
+    <button class="pay" data-pay><i style="color:#4285f4">G</i>GPay</button>
+    <button class="pay" data-pay><i style="color:#00baf2;font-size:22px">Paytm</i>Paytm</button>
+    <button class="pay" data-pay><i>🔗</i>UPI Link</button>
    </div>
    <div class="or">OR</div>
-   <button class="btn" id="genQr">▣ Generate QR</button>
+   <button class="btn" data-pay>▣ Generate QR</button>
    <div class="msg" id="m4"></div>
- </div></section>
- <section class="page" id="p5"><div class="card" style="text-align:center">
-   <h2 style="justify-content:center">▣ Scan &amp; Pay</h2>
-   <div id="qr"></div>
-   <p style="font-size:14px">Scan this QR code to make payment</p>
-   <button class="btn" id="paid" style="margin-top:12px">I've paid – verify</button>
-   <button class="btn back" id="back">← Back</button>
-   <div class="msg" id="m5"></div>
+   <p class="note">Secure payment by Razorpay. Success is shown only after our server verifies it.</p>
  </div></section>
 </main>
 <dialog id="ok"><div class="ok-ic">✓</div><h3>Payment Successful!</h3>
