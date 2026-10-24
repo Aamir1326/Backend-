@@ -68,7 +68,7 @@ async function pay() {
     const rz = new Razorpay({
       key: o.keyId, order_id: o.orderId, amount: o.amount, currency: o.currency,
       name: "Support Us", description: "Support our work",
-      prefill: { ...o.prefill, method: "upi" }, theme: { color: "#652FFF" },
+      prefill: { ...o.prefill, method: "upi" }, theme: { color: "#0f6b4f" },
       handler: async resp => {
         say("m4", "Verifying payment…", true);
         try {
