@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Talk with AI – Support Us</title><link rel="stylesheet" href="style.css">
+<style>
+.chat{display:flex;flex-direction:column;height:calc(100vh - 64px);max-width:760px;margin:0 auto;padding:14px}
+#log{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:6px}
+.b{max-width:82%;padding:11px 15px;border-radius:16px;line-height:1.5;font-size:15px;white-space:pre-wrap}
+.u{align-self:flex-end;background:linear-gradient(90deg,var(--pri),var(--pri2))}
+.a{align-self:flex-start;background:var(--card2);border:1px solid var(--bd)}
+.bar{display:flex;gap:10px;margin-top:10px}.bar .btn{width:90px}
+</style></head><body>
+<nav class="side" id="side">
+ <div class="logo"><div style="font-size:44px">💜</div><b>Support Us</b><small>Together We Grow</small></div>
+ <a href="index.html">🏠 Home</a><a href="AI.html" class="on">🤖 Talk with AI</a>
+ <a href="privacy.html">🛡️ Privacy Policy</a>
+</nav>
+<div class="scrim" id="scrim"></div>
+<header class="top"><button class="burger" id="burger" aria-label="Menu">☰</button><span class="brand">🤖 Talk with AI</span><div class="avatar">👤</div></header>
+<div class="chat">
+ <div id="log"><div class="b a">Hi! Ask me anything about this website or how to support our work.</div></div>
+ <div class="bar"><input id="q" placeholder="Type your message..." maxlength="500"><button class="btn" id="go">Send</button></div>
+</div>
+<script src="config.js"></script>
+<script>
+const $=id=>document.getElementById(id),hist=[];
+burger.onclick=()=>{side.classList.toggle("open");scrim.classList.toggle("on")};scrim.onclick=burger.onclick;
+function add(t,c){const d=document.createElement("div");d.className="b "+c;d.textContent=t;$("log").append(d);$("log").scrollTop=1e9;return d}
+async function send(){
+ const m=$("q").value.trim();if(!m)return;$("q").value="";add(m,"u");
+ const w=add("Thinking…","a");$("go").disabled=true;
+ try{
+  let reply="This is a demo reply. Set DEMO:false in config.js.";
+  if(!CONFIG.DEMO){
+   const r=await fetch(CONFIG.API+"/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:m,history:hist})});
+   if(!r.ok)throw 0;reply=(await r.json()).reply;
+  }
+  w.textContent=reply;hist.push({role:"user",content:m},{role:"assistant",content:reply});
+ }catch(e){w.textContent="Could not reach the AI server. Try again."}
+ $("go").disabled=false;
+}
+$("go").onclick=send;$("q").onkeydown=e=>{if(e.key==="Enter")send()};
+</script></body></html>
