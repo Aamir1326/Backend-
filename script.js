@@ -1,4 +1,3 @@
-
 const $ = id => document.getElementById(id);
 let token = "";
 
@@ -104,3 +103,12 @@ async function pay() {
 }
 document.querySelectorAll("[data-pay]").forEach(b => b.onclick = pay);
 $("home").onclick = () => location.reload();
+
+/* Generate QR: shows your own QR photo (qr.png in this folder / GitHub repo) */
+$("genQr").onclick = () => {
+  $("qrimg").src = (CONFIG.QR_IMAGE || "qr.png") + "?v=" + Date.now();
+  $("m5").textContent = ""; show(5);
+};
+$("qrimg").onerror = () => say("m5", "QR image not found. Upload your QR as qr.png.");
+$("back").onclick = () => show(4);
+$("paid").onclick = () => say("m5", "Thank you! We will confirm your payment manually.", true);
