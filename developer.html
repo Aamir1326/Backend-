@@ -16,6 +16,7 @@
  <div class="dp" id="devpage" hidden>
   <div class="hero2">
    <img class="devbig" id="photo" alt="Developer">
+   <p id="photoErr" class="msg err"></p>
    <h1 id="n"></h1><div class="role" id="r"></div><div class="tag" id="t"></div>
   </div>
   <section class="card"><h2>👤 About</h2><p id="b"></p></section>
@@ -36,7 +37,10 @@
     const r = await fetch(CONFIG.API + "/dev-info?t=" + encodeURIComponent(tk));
     if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error("[" + r.status + "] " + (j.error || "server error")); }
     const d = await r.json();
-    g("photo").src = CONFIG.API + "/dev-photo?t=" + encodeURIComponent(tk);
+    fetch(CONFIG.API + "/dev-photo?t=" + encodeURIComponent(tk)).then(async p => {
+      if (!p.ok) { const j = await p.json().catch(() => ({})); throw new Error("[" + p.status + "] " + (j.error || "photo error")); }
+      g("photo").src = URL.createObjectURL(await p.blob());
+    }).catch(e => { g("photo").hidden = true; g("photoErr").textContent = "Photo problem: " + e.message; });
     g("n").textContent = d.name || ""; g("r").textContent = d.role || ""; g("t").textContent = d.tagline || "";
     g("b").textContent = d.bio || ""; g("c").textContent = d.contact ? "📧 " + d.contact : "";
     const add = (p, tag, text, cls) => { const e = document.createElement(tag); if (cls) e.className = cls; e.textContent = text; p.append(e); return e; };
