@@ -1,3 +1,4 @@
+
 const $ = id => document.getElementById(id);
 let token = "";
 
@@ -7,10 +8,10 @@ async function api(path, body) {
   try {
     r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   } catch (e) {
-    throw new Error("Cannot reach server: " + url);   // DEBUG: remove the URL part later
+    throw new Error("Cannot reach server. Check your internet and try again.");
   }
   const d = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error((d.error || "Error " + r.status) + " [" + r.status + " " + url + "]");   // DEBUG
+  if (!r.ok) throw new Error((d.error || "Error " + r.status));
   return d;
 }
 function say(id, t, ok) { const e = $(id); e.textContent = t; e.className = "msg " + (ok ? "ok" : "err"); }
