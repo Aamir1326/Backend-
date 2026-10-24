@@ -73,21 +73,9 @@ const Session = {
         const r = await fetch(CONFIG.API + "/dev-access", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin }) });
         const d = await r.json().catch(() => ({}));
         if (!r.ok) throw new Error(d.error || "Error " + r.status);
-        devInfo(d);
+        sessionStorage.setItem("su_dev", d.token); location.href = "developer.html";
       } catch (e) { m.className = "msg err"; m.textContent = e.message; $("devGo").disabled = false; }
     };
-  }
-  function devInfo(d) {
-    const box = $("dev"); box.textContent = "";
-    const img = document.createElement("img");
-    img.className = "devimg"; img.alt = "Developer";
-    img.src = CONFIG.API + "/dev-photo?t=" + encodeURIComponent(d.token);
-    const h = document.createElement("h3"); h.textContent = d.name || "Developer";
-    const role = document.createElement("div"); role.className = "sub"; role.style.justifyContent = "center"; role.textContent = d.role || "";
-    const p = document.createElement("p"); p.textContent = d.bio || "";
-    const c = document.createElement("p"); c.textContent = d.contact ? "✉️ " + d.contact : "";
-    const x = document.createElement("button"); x.className = "btn"; x.textContent = "Close"; x.onclick = () => box.close();
-    box.append(img, h, role, p, c, x);
   }
   $("devBtn").onclick = () => { closeMenu(); devForm(); $("dev").showModal(); };
 })();
