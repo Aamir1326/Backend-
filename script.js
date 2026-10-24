@@ -2,13 +2,15 @@ const $ = id => document.getElementById(id);
 let token = "";
 
 async function api(path, body) {
-  const r = await fetch(CONFIG.API + path, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
+  const url = CONFIG.API + path;
+  let r;
+  try {
+    r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  } catch (e) {
+    throw new Error("Cannot reach server: " + url);   // DEBUG: remove the URL part later
+  }
   const d = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(d.error || "Server error " + r.status);
+  if (!r.ok) throw new Error((d.error || "Error " + r.status) + " [" + r.status + " " + url + "]");   // DEBUG
   return d;
 }
 function say(id, t, ok) { const e = $(id); e.textContent = t; e.className = "msg " + (ok ? "ok" : "err"); }
@@ -38,7 +40,7 @@ async function sendOtp() {
   if (name.length < 2) return say("m1", "Enter your name.");
   if (!emailOk(email)) return say("m1", "Enter a valid email address.");
   busy($("sendOtp"), true); say("m1", "Sending OTP…", true);
-  try { await api("send-otp", { name, email }); say("m1", "OTP sent. Check your inbox.", true); show(2); $("otp").focus(); }
+  try { await api("/send-otp", { name, email }); say("m1", "OTP sent. Check your inbox.", true); show(2); $("otp").focus(); }
   catch (e) { say("m1", e.message); say("m2", e.message); }
   busy($("sendOtp"), false);
 }
