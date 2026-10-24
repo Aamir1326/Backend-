@@ -106,3 +106,6 @@ main{padding:0}
 .back{width:auto;padding:8px 26px;background:var(--card2);box-shadow:none;margin:10px auto 0}
 .row{flex-direction:row}
 @media(max-width:700px){.row{flex-direction:column;align-items:stretch}}
+
+.qrbox{background:#fff;display:inline-block;padding:10px;border-radius:14px;margin:8px 0}
+.qrbox img{display:block;width:min(260px,70vw);height:auto}
