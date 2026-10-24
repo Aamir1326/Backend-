@@ -38,7 +38,7 @@ async function sendOtp() {
   if (name.length < 2) return say("m1", "Enter your name.");
   if (!emailOk(email)) return say("m1", "Enter a valid email address.");
   busy($("sendOtp"), true); say("m1", "Sending OTP…", true);
-  try { await api("/send-otp", { name, email }); say("m1", "OTP sent. Check your inbox.", true); show(2); $("otp").focus(); }
+  try { await api("send-otp", { name, email }); say("m1", "OTP sent. Check your inbox.", true); show(2); $("otp").focus(); }
   catch (e) { say("m1", e.message); say("m2", e.message); }
   busy($("sendOtp"), false);
 }
