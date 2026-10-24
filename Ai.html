@@ -30,13 +30,13 @@ async function send(){
  const m=$("q").value.trim();if(!m)return;$("q").value="";add(m,"u");
  const w=add("Thinking…","a");$("go").disabled=true;
  try{
-  let reply="This is a demo reply. Set DEMO:false in config.js.";
-  if(!CONFIG.DEMO){
+  let reply;
+  {
    const r=await fetch(CONFIG.API+"/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:m,history:hist})});
-   if(!r.ok)throw 0;reply=(await r.json()).reply;
+   const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||"Server error");reply=d.reply;
   }
   w.textContent=reply;hist.push({role:"user",content:m},{role:"assistant",content:reply});
- }catch(e){w.textContent="Could not reach the AI server. Try again."}
+ }catch(e){w.textContent=e.message||"Could not reach the AI server."}
  $("go").disabled=false;
 }
 $("go").onclick=send;$("q").onkeydown=e=>{if(e.key==="Enter")send()};
