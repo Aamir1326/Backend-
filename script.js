@@ -15,23 +15,7 @@ async function api(path, body) {
 }
 function say(id, t, ok) { const e = $(id); e.textContent = t; e.className = "msg " + (ok ? "ok" : "err"); }
 function busy(btn, on) { btn.disabled = on; }
-function show(n) { document.querySelectorAll(".page").forEach(p => p.classList.toggle("show", p.id === "p" + n)); window.scrollTo(0, 0); }
-
-/* Menu */
-$("burger").onclick = () => { $("side").classList.toggle("open"); $("scrim").classList.toggle("on"); };
-$("scrim").onclick = $("burger").onclick;
-$("share").onclick = async () => {
-  const d = { title: "Support Us", text: "Support our work", url: location.href };
-  try { navigator.share ? await navigator.share(d) : (await navigator.clipboard.writeText(d.url), alert("Link copied")); } catch (e) {}
-};
-document.querySelectorAll("[data-info]").forEach(b => b.onclick = () => {
-  const about = b.dataset.info === "about";
-  $("it").textContent = about ? "About" : "Contact";
-  $("ib").textContent = about
-    ? "Support Us collects voluntary contributions for education, charity and community projects."
-    : "Email us at " + CONFIG.CONTACT;
-  $("info").showModal();
-});
+function show(n) { document.querySelectorAll(".page").forEach(p => p.classList.toggle("show", p.id === "p" + n)); window.scrollTo(0, 0); if (n >= 3 && Session.get()) Session.set({ step: n }); }
 
 /* Step 1: Send OTP */
 const emailOk = e => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e);
@@ -54,7 +38,7 @@ $("verify").onclick = async () => {
   busy($("verify"), true); say("m2", "Verifying…", true);
   try {
     const r = await api("/verify-otp", { email: $("email").value.trim(), otp });
-    token = r.token; say("m2", "Email verified ✔", true); show(3);
+    token = r.token; Session.set({ name: $("name").value.trim(), email: $("email").value.trim(), token, step: 3 }); say("m2", "Email verified ✔", true); show(3);
   } catch (e) { say("m2", e.message); }
   busy($("verify"), false);
 };
@@ -112,3 +96,11 @@ $("genQr").onclick = () => {
 $("qrimg").onerror = () => say("m5", "QR image not found. Upload your QR as qr.png.");
 $("back").onclick = () => show(4);
 $("paid").onclick = () => say("m5", "Thank you! We will confirm your payment manually.", true);
+
+/* Already verified? Skip the OTP steps (e.g. coming back from the AI page) */
+(function () {
+  const S = Session.get();
+  if (!S) return;
+  $("name").value = S.name || ""; $("email").value = S.email || ""; token = S.token;
+  show(Math.min(Math.max(S.step || 3, 3), 4));
+})();
