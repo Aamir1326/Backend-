@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>About Developer – Support Us</title><link rel="stylesheet" href="style.css">
+</head><body>
+<nav class="side" id="side"></nav>
+<div class="scrim" id="scrim"></div>
+<header class="top"><button class="burger" id="burger" aria-label="Menu">☰</button><span class="brand">👨‍💻 About Developer</span><div class="avatar">👤</div></header>
+<main>
+ <div class="page show" id="lock" hidden><div class="card" style="text-align:center;width:min(420px,100%)">
+  <div style="font-size:50px">🔒</div><h2 style="justify-content:center">Locked</h2>
+  <p style="color:var(--mut);margin-bottom:16px">Open the menu → About Developer and enter the 6-digit password. Contact the admin if you need it.</p>
+  <a class="btn" href="index.html" style="text-decoration:none">🏠 Home</a>
+ </div></div>
+ <div class="dp" id="devpage" hidden>
+  <div class="hero2">
+   <img class="devbig" id="photo" alt="Developer">
+   <h1 id="n"></h1><div class="role" id="r"></div><div class="tag" id="t"></div>
+  </div>
+  <section class="card"><h2>👤 About</h2><p id="b"></p></section>
+  <section class="card" id="sk"><h2>🛠️ Skills</h2><div class="chips" id="skl"></div></section>
+  <section class="card" id="ex"><h2>💼 Experience</h2><div id="exl"></div></section>
+  <section class="card" id="pr"><h2>🚀 Projects</h2><div id="prl"></div></section>
+  <section class="card"><h2>✉️ Contact</h2><p id="c"></p><div id="lks"></div></section>
+ </div>
+</main>
+<script src="config.js"></script><script src="common.js"></script>
+<script>
+(async () => {
+  const g = id => document.getElementById(id);
+  const tk = sessionStorage.getItem("su_dev");
+  const lock = () => { g("lock").hidden = false; g("devpage").hidden = true; };
+  if (!tk) return lock();
+  try {
+    const r = await fetch(CONFIG.API + "/dev-info?t=" + encodeURIComponent(tk));
+    if (!r.ok) throw 0;
+    const d = await r.json();
+    g("photo").src = CONFIG.API + "/dev-photo?t=" + encodeURIComponent(tk);
+    g("n").textContent = d.name || ""; g("r").textContent = d.role || ""; g("t").textContent = d.tagline || "";
+    g("b").textContent = d.bio || ""; g("c").textContent = d.contact ? "📧 " + d.contact : "";
+    const add = (p, tag, text, cls) => { const e = document.createElement(tag); if (cls) e.className = cls; e.textContent = text; p.append(e); return e; };
+    (d.skills || []).forEach(s => add(g("skl"), "span", s));
+    if (!(d.skills || []).length) g("sk").hidden = true;
+    (d.experience || []).forEach(x => { const i = add(g("exl"), "div", "", "item"); add(i, "b", x.title || ""); add(i, "small", x.period || ""); add(i, "p", x.text || ""); });
+    if (!(d.experience || []).length) g("ex").hidden = true;
+    (d.projects || []).forEach(x => { const i = add(g("prl"), "div", "", "item"); add(i, "b", x.name || ""); add(i, "p", x.text || "");
+      if (/^https?:\/\//.test(x.link || "")) { const a = add(i, "a", "Open ↗", "lk"); a.href = x.link; a.target = "_blank"; a.rel = "noopener"; } });
+    if (!(d.projects || []).length) g("pr").hidden = true;
+    (d.links || []).forEach(x => { if (/^https?:\/\//.test(x.url || "")) { const a = add(g("lks"), "a", (x.label || x.url) + " ↗", "lk"); a.href = x.url; a.target = "_blank"; a.rel = "noopener"; } });
+    g("devpage").hidden = false;
+  } catch (e) { sessionStorage.removeItem("su_dev"); lock(); }
+})();
+</script></body></html>
