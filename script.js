@@ -1,25 +1,21 @@
 const $ = id => document.getElementById(id);
+let token = "";
 
 async function api(path, body) {
-  if (CONFIG.DEMO) {
-    await new Promise(r => setTimeout(r, 600));
-    if (path === "/verify-otp") return { ok: /^\d{6}$/.test(body.otp) };
-    if (path === "/verify-payment") return { ok: true, txnId: "DEMO-" + Date.now(), amount: "—" };
-    return { ok: true };
-  }
   const r = await fetch(CONFIG.API + path, {
-    method: body ? "POST" : "GET",
+    method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: body ? JSON.stringify(body) : undefined
+    body: JSON.stringify(body)
   });
-  if (!r.ok) throw new Error("Server error " + r.status);
-  return r.json();
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(d.error || "Server error " + r.status);
+  return d;
 }
 function say(id, t, ok) { const e = $(id); e.textContent = t; e.className = "msg " + (ok ? "ok" : "err"); }
 function busy(btn, on) { btn.disabled = on; }
 function show(n) { document.querySelectorAll(".page").forEach(p => p.classList.toggle("show", p.id === "p" + n)); window.scrollTo(0, 0); }
 
-/* Navigation */
+/* Menu */
 $("burger").onclick = () => { $("side").classList.toggle("open"); $("scrim").classList.toggle("on"); };
 $("scrim").onclick = $("burger").onclick;
 $("share").onclick = async () => {
@@ -43,10 +39,11 @@ async function sendOtp() {
   if (!emailOk(email)) return say("m1", "Enter a valid email address.");
   busy($("sendOtp"), true); say("m1", "Sending OTP…", true);
   try { await api("/send-otp", { name, email }); say("m1", "OTP sent. Check your inbox.", true); show(2); $("otp").focus(); }
-  catch (e) { say("m1", "Could not send OTP. Try again."); }
+  catch (e) { say("m1", e.message); say("m2", e.message); }
   busy($("sendOtp"), false);
 }
-$("sendOtp").onclick = sendOtp; $("resend").onclick = sendOtp;
+$("sendOtp").onclick = sendOtp;
+$("resend").onclick = async () => { await sendOtp(); };
 
 /* Step 2: Verify OTP */
 $("verify").onclick = async () => {
@@ -55,9 +52,8 @@ $("verify").onclick = async () => {
   busy($("verify"), true); say("m2", "Verifying…", true);
   try {
     const r = await api("/verify-otp", { email: $("email").value.trim(), otp });
-    if (!r.ok) throw 0;
-    say("m2", "Email verified ✔", true); show(3);
-  } catch (e) { say("m2", "Wrong or expired OTP."); }
+    token = r.token; say("m2", "Email verified ✔", true); show(3);
+  } catch (e) { say("m2", e.message); }
   busy($("verify"), false);
 };
 
@@ -66,38 +62,42 @@ $("sendC").onclick = async () => {
   const comment = $("comment").value.trim();
   if (!comment) return say("m3", "Write a comment first.");
   busy($("sendC"), true);
-  try { await api("/comment", { email: $("email").value.trim(), comment }); say("m3", "Comment sent. Thank you!", true); $("comment").value = ""; setTimeout(() => show(4), 700); }
-  catch (e) { say("m3", "Could not send comment."); }
+  try {
+    await api("/comment", { name: $("name").value.trim(), email: $("email").value.trim(), comment, token });
+    say("m3", "Comment sent. Thank you!", true); $("comment").value = ""; setTimeout(() => show(4), 700);
+  } catch (e) { say("m3", e.message); }
   busy($("sendC"), false);
 };
 
-/* Step 4: Payments */
-function upi(extra) {
-  const p = new URLSearchParams({ pa: CONFIG.UPI_ID, pn: CONFIG.PAYEE, cu: "INR", tn: "Support Us" });
-  if (CONFIG.AMOUNT) p.set("am", CONFIG.AMOUNT);
-  return extra + p.toString();
-}
-$("gpay").href = upi("tez://upi/pay?");
-$("paytm").href = upi("paytmmp://pay?");
-$("upi").href = upi("upi://pay?");
-[ "gpay", "paytm", "upi" ].forEach(id => $(id).addEventListener("click", () => setTimeout(() => say("m4", "After paying, tap Generate QR → “I've paid” to verify."), 400)));
-
-$("genQr").onclick = () => {
-  $("qr").innerHTML = "";
-  new QRCode($("qr"), { text: upi("upi://pay?"), width: 160, height: 160 });
-  show(5);
-};
-$("back").onclick = () => show(4);
-
-/* Step 5: success ONLY after server-side verification */
-$("paid").onclick = async () => {
-  busy($("paid"), true); say("m5", "Checking with payment gateway…", true);
+/* Step 4: Payment (Razorpay Checkout; success only after server verification) */
+async function pay() {
+  const amount = Number($("amount").value);
+  if (!(amount >= 1)) return say("m4", "Enter an amount of at least ₹1.");
+  if (typeof Razorpay === "undefined") return say("m4", "Payment window did not load. Check your internet.");
+  say("m4", "Starting payment…", true);
   try {
-    const r = await api("/verify-payment", { email: $("email").value.trim() });
-    if (!r.ok) throw 0;
-    $("txn").textContent = "Transaction ID: " + r.txnId + (r.amount ? " · Amount: " + r.amount : "");
-    $("ok").showModal();
-  } catch (e) { say("m5", "Payment not confirmed yet. Try again in a minute."); }
-  busy($("paid"), false);
-};
+    const o = await api("/payments/create-order", {
+      username: $("name").value.trim(), email: $("email").value.trim(), amount, token
+    });
+    const rz = new Razorpay({
+      key: o.keyId, order_id: o.orderId, amount: o.amount, currency: o.currency,
+      name: "Support Us", description: "Support our work",
+      prefill: { ...o.prefill, method: "upi" }, theme: { color: "#652FFF" },
+      handler: async resp => {
+        say("m4", "Verifying payment…", true);
+        try {
+          const v = await api("/payments/verify", resp);
+          if (v.status === "paid") {
+            $("txn").textContent = "Transaction ID: " + v.transactionId + " · Amount: ₹" + v.amount;
+            $("ok").showModal();
+          } else say("m4", v.message || "Payment is still pending.");
+        } catch (e) { say("m4", e.message); }
+      },
+      modal: { ondismiss: () => say("m4", "Payment cancelled.") }
+    });
+    rz.on("payment.failed", r => say("m4", (r.error && r.error.description) || "Payment failed."));
+    rz.open();
+  } catch (e) { say("m4", e.message); }
+}
+document.querySelectorAll("[data-pay]").forEach(b => b.onclick = pay);
 $("home").onclick = () => location.reload();
