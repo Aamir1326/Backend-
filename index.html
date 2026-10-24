@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Support Us – Together We Grow</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head><body>
+<nav class="side" id="side">
+ <div class="logo"><div style="font-size:44px">💜</div><b>Support Us</b><small>Together We Grow</small></div>
+ <a href="index.html" class="on">🏠 Home</a>
+ <a href="AI.html">🤖 Talk with AI</a>
+ <button class="nav" id="share">🔗 Share</button>
+ <a href="privacy.html">🛡️ Privacy Policy</a>
+ <button class="nav" data-info="about">ℹ️ About</button>
+ <button class="nav" data-info="contact">✉️ Contact</button>
+ <div class="made">Made with ❤️<br>for a better future</div>
+</nav>
+<div class="scrim" id="scrim"></div>
+<header class="top"><button class="burger" id="burger" aria-label="Menu">☰</button><span class="brand">💜 Support Us</span><div class="avatar">👤</div></header>
+<main>
+ <section class="page show" id="p1">
+  <div class="wrap">
+   <div class="intro">
+    <div class="bigheart">💗</div>
+    <p class="w">Welcome to Our Platform</p>
+    <h1>Support <span>Our Work</span></h1>
+    <p class="s">Your small contribution can make a big difference.</p>
+   </div>
+   <div class="card">
+    <h2><span class="num">1</span>Open Form</h2>
+    <div class="row"><label for="name">👤 Name</label><input id="name" placeholder="Enter your name" autocomplete="name"></div>
+    <div class="row"><label for="email">✉️ Email</label><input id="email" type="email" placeholder="Enter your email address" autocomplete="email"></div>
+    <button class="btn" id="sendOtp">✉️ Send OTP</button>
+    <div class="msg" id="m1"></div>
+    <p class="note">🛡️ Your IP is detected by our server and stored only to process your donation</p>
+   </div>
+  </div>
+ </section>
+ <section class="page" id="p2"><div class="card">
+   <h2><span class="num">2</span>Enter OTP</h2>
+   <div class="sub">✉️ OTP sent to your email</div>
+   <input id="otp" inputmode="numeric" maxlength="6" placeholder="🔒 Enter 6 digit OTP">
+   <button class="btn" id="verify" style="margin-top:14px">✔ Verify OTP</button>
+   <div class="msg" id="m2"></div>
+   <button class="lnk" id="resend">Resend OTP</button>
+ </div></section>
+ <section class="page" id="p3"><div class="card">
+   <h2><span class="num">3</span>Your Comment</h2>
+   <textarea id="comment" maxlength="1000" placeholder="✏️ Write your comment..."></textarea>
+   <div class="to"><b>Send to:</b><span>✉️ aamirabbas0078@gmail.com</span></div>
+   <button class="btn" id="sendC">➤ Send</button>
+   <div class="msg" id="m3"></div>
+   <button class="lnk" onclick="show(4)">Skip</button>
+ </div></section>
+ <section class="page" id="p4"><div class="card">
+   <h2><span class="num">4</span>Choose Payment Method</h2>
+   <div class="pays">
+    <a class="pay" id="gpay" href="#"><i style="color:#4285f4">G</i>GPay</a>
+    <a class="pay" id="paytm" href="#"><i style="color:#00baf2;font-size:22px">Paytm</i>Paytm</a>
+    <a class="pay" id="upi" href="#"><i>🔗</i>UPI Link</a>
+   </div>
+   <div class="or">OR</div>
+   <button class="btn" id="genQr">▣ Generate QR</button>
+   <div class="msg" id="m4"></div>
+ </div></section>
+ <section class="page" id="p5"><div class="card" style="text-align:center">
+   <h2 style="justify-content:center">▣ Scan &amp; Pay</h2>
+   <div id="qr"></div>
+   <p style="font-size:14px">Scan this QR code to make payment</p>
+   <button class="btn" id="paid" style="margin-top:12px">I've paid – verify</button>
+   <button class="btn back" id="back">← Back</button>
+   <div class="msg" id="m5"></div>
+ </div></section>
+</main>
+<dialog id="ok"><div class="ok-ic">✓</div><h3>Payment Successful!</h3>
+ <p>Thank you for your support ❤️<br><small id="txn"></small></p>
+ <button class="btn" id="home">🏠 Go to Home</button></dialog>
+<dialog id="info"><h3 id="it"></h3><p id="ib"></p><button class="btn" onclick="info.close()">Close</button></dialog>
+<script src="config.js"></script><script src="script.js"></script>
+</body></html>
