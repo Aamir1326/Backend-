@@ -16,10 +16,11 @@ const Session = {
   const page = (location.pathname.split("/").pop() || "index.html").toLowerCase();
   const on = n => page === n ? ' class="on"' : "";
   document.getElementById("side").innerHTML =
-    '<div class="logo"><div style="font-size:44px">💜</div><b>Support Us</b><small>Together We Grow</small></div>' +
+    '<div class="logo"><div style="font-size:40px">💚</div><b>JMI Student Charity</b><small>Support Our Work</small></div>' +
     '<a href="index.html"' + on("index.html") + '>🏠 Home</a>' +
     '<a href="AI.html"' + on("ai.html") + '>🤖 Talk with AI</a>' +
-    '<a href="/jmi/">🎓 JMI Site</a>' +
+    '<a href="jmi.html"' + on("jmi.html") + '>🎓 JMI</a>' +
+    '<a href="community.html"' + on("community.html") + '>👥 Community</a>' +
     '<button class="nav" id="share">🔗 Share</button>' +
     '<a href="privacy.html"' + on("privacy.html") + '>🛡️ Privacy Policy</a>' +
     '<button class="nav" data-info="about">ℹ️ About</button>' +
