@@ -1,5 +1,4 @@
-/* Shared settings. Never put API keys / email or payment secrets here. */
 const CONFIG = {
-  API: "server-production-6b45.up.railway.app",
+  API: "https://server-production-6b45.up.railway.app/api",
   CONTACT: "aamirabbas0078@gmail.com"
 };
