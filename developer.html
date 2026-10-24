@@ -10,6 +10,7 @@
  <div class="page show" id="lock" hidden><div class="card" style="text-align:center;width:min(420px,100%)">
   <div style="font-size:50px">🔒</div><h2 style="justify-content:center">Locked</h2>
   <p style="color:var(--mut);margin-bottom:16px">Open the menu → About Developer and enter the 6-digit password. Contact the admin if you need it.</p>
+  <p id="why" class="msg err"></p>
   <a class="btn" href="index.html" style="text-decoration:none">🏠 Home</a>
  </div></div>
  <div class="dp" id="devpage" hidden>
@@ -29,11 +30,11 @@
 (async () => {
   const g = id => document.getElementById(id);
   const tk = sessionStorage.getItem("su_dev");
-  const lock = () => { g("lock").hidden = false; g("devpage").hidden = true; };
-  if (!tk) return lock();
+  const lock = why => { g("why").textContent = why || ""; g("lock").hidden = false; g("devpage").hidden = true; };
+  if (!tk) return lock("No password entered yet.");
   try {
     const r = await fetch(CONFIG.API + "/dev-info?t=" + encodeURIComponent(tk));
-    if (!r.ok) throw 0;
+    if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error("[" + r.status + "] " + (j.error || "server error")); }
     const d = await r.json();
     g("photo").src = CONFIG.API + "/dev-photo?t=" + encodeURIComponent(tk);
     g("n").textContent = d.name || ""; g("r").textContent = d.role || ""; g("t").textContent = d.tagline || "";
@@ -48,6 +49,6 @@
     if (!(d.projects || []).length) g("pr").hidden = true;
     (d.links || []).forEach(x => { if (/^https?:\/\//.test(x.url || "")) { const a = add(g("lks"), "a", (x.label || x.url) + " ↗", "lk"); a.href = x.url; a.target = "_blank"; a.rel = "noopener"; } });
     g("devpage").hidden = false;
-  } catch (e) { sessionStorage.removeItem("su_dev"); lock(); }
+  } catch (e) { sessionStorage.removeItem("su_dev"); lock(e && e.message ? e.message : "Could not reach server"); }
 })();
 </script></body></html>
