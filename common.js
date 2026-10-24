@@ -19,6 +19,7 @@ const Session = {
     '<div class="logo"><div style="font-size:44px">💜</div><b>Support Us</b><small>Together We Grow</small></div>' +
     '<a href="index.html"' + on("index.html") + '>🏠 Home</a>' +
     '<a href="AI.html"' + on("ai.html") + '>🤖 Talk with AI</a>' +
+    '<a href="/jmi/">🎓 JMI Site</a>' +
     '<button class="nav" id="share">🔗 Share</button>' +
     '<a href="privacy.html"' + on("privacy.html") + '>🛡️ Privacy Policy</a>' +
     '<button class="nav" data-info="about">ℹ️ About</button>' +
