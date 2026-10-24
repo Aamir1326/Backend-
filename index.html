@@ -8,7 +8,7 @@
 <nav class="side" id="side">
  <div class="logo"><div style="font-size:44px">💜</div><b>Support Us</b><small>Together We Grow</small></div>
  <a href="index.html" class="on">🏠 Home</a>
- <a href="Ai.html">🤖 Talk with AI</a>
+ <a href="AI.html">🤖 Talk with AI</a>
  <button class="nav" id="share">🔗 Share</button>
  <a href="privacy.html">🛡️ Privacy Policy</a>
  <button class="nav" data-info="about">ℹ️ About</button>
@@ -61,9 +61,17 @@
     <button class="pay" data-pay><i>🔗</i>UPI Link</button>
    </div>
    <div class="or">OR</div>
-   <button class="btn" data-pay>▣ Generate QR</button>
+   <button class="btn" id="genQr">▣ Generate QR</button>
    <div class="msg" id="m4"></div>
    <p class="note">Secure payment by Razorpay. Success is shown only after our server verifies it.</p>
+ </div></section>
+ <section class="page" id="p5"><div class="card" style="text-align:center">
+   <h2 style="justify-content:center">▣ Scan &amp; Pay</h2>
+   <div class="qrbox"><img id="qrimg" alt="Payment QR code"></div>
+   <p style="font-size:14px">Scan this QR code to make payment</p>
+   <button class="btn" id="paid" style="margin-top:12px">✔ I've paid</button>
+   <button class="btn back" id="back">← Back</button>
+   <div class="msg" id="m5"></div>
  </div></section>
 </main>
 <dialog id="ok"><div class="ok-ic">✓</div><h3>Payment Successful!</h3>
