@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Login – JMI</title><link rel="stylesheet" href="style.css"></head><body data-public="1">
+<div class="auth"><div class="card">
+ <div class="center big">🎓</div><h1>Welcome back</h1><p class="tag">Login to continue to Jamia</p>
+ <label for="email">Email</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com">
+ <label for="pw">Password</label>
+ <div class="pw"><input id="pw" type="password" autocomplete="current-password" placeholder="Your password"><button type="button" id="eye" aria-label="Show password">👁️</button></div>
+ <button class="btn" id="go">Login</button><div class="msg" id="m"></div>
+ <a class="lnk" href="forgotpass.html">Forgot password?</a>
+ <a class="lnk" href="signup.html">New here? Create an account</a>
+</div></div>
+<script src="common.js"></script>
+<script>
+$("eye").onclick = () => $("pw").type = $("pw").type === "password" ? "text" : "password";
+async function login() {
+  const email = $("email").value.trim(), password = $("pw").value;
+  if (!email || !password) return say("m", "Enter email and password.");
+  $("go").disabled = true; say("m", "Logging in…", true);
+  try { await api("/login", { email, password }); location.replace("index.html"); }
+  catch (e) { say("m", e.message); $("go").disabled = false; }
+}
+$("go").onclick = login; $("pw").onkeydown = e => { if (e.key === "Enter") login(); };
+</script></body></html>
