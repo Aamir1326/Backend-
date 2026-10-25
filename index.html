@@ -3,7 +3,6 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>JMI Student Charity – Support Our Work</title>
 <link rel="stylesheet" href="style.css">
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head><body>
 <nav class="side" id="side"></nav>
 <div class="scrim" id="scrim"></div>
@@ -21,9 +20,10 @@
     <h2><span class="num">1</span>Open Form</h2>
     <div class="row"><label for="name">👤 Name</label><input id="name" placeholder="Enter your name" autocomplete="name"></div>
     <div class="row"><label for="email">✉️ Email</label><input id="email" type="email" placeholder="Enter your email address" autocomplete="email"></div>
+    <div class="row"><label for="phone">📞 Phone</label><input id="phone" type="tel" inputmode="tel" placeholder="Enter your phone number" autocomplete="tel"></div>
     <button class="btn" id="sendOtp">✉️ Send OTP</button>
     <div class="msg" id="m1"></div>
-    <p class="note">🛡️ Your IP is detected by our server and stored only to process your donation</p>
+    <p class="note">🛡️ Your IP is detected by our server and stored only to process your donation. Your phone number is saved for contact only and is not verified.</p>
    </div>
   </div>
  </section>
@@ -43,30 +43,19 @@
    <div class="msg" id="m3"></div>
    <button class="lnk" onclick="show(4)">Skip</button>
  </div></section>
- <section class="page" id="p4"><div class="card">
-   <h2><span class="num">4</span>Choose Payment Method</h2>
-   <div class="row"><label for="amount">₹ Amount</label><input id="amount" type="number" min="1" step="1" inputmode="decimal" placeholder="Enter amount"></div>
-   <div class="pays">
-    <button class="pay" data-pay><i style="color:#4285f4">G</i>GPay</button>
-    <button class="pay" data-pay><i style="color:#00baf2;font-size:22px">Paytm</i>Paytm</button>
-    <button class="pay" data-pay><i>🔗</i>UPI Link</button>
-   </div>
-   <div class="or">OR</div>
-   <button class="btn" id="genQr">▣ Generate QR</button>
-   <div class="msg" id="m4"></div>
-   <p class="note">Secure payment by Razorpay. Success is shown only after our server verifies it.</p>
- </div></section>
- <section class="page" id="p5"><div class="card" style="text-align:center">
-   <h2 style="justify-content:center">▣ Scan &amp; Pay</h2>
+ <section class="page" id="p4"><div class="card" style="text-align:center">
+   <h2 style="justify-content:center"><span class="num">4</span>Scan &amp; Pay</h2>
    <div class="qrbox"><img id="qrimg" alt="Payment QR code"></div>
-   <p style="font-size:14px">Scan this QR code to make payment</p>
-   <button class="btn" id="paid" style="margin-top:12px">✔ I've paid</button>
-   <button class="btn back" id="back">← Back</button>
-   <div class="msg" id="m5"></div>
+   <p style="font-size:14px;margin-bottom:12px">Scan this QR code with any UPI app to pay.</p>
+   <div class="row"><label for="amount">₹ Amount</label><input id="amount" type="number" min="1" step="1" inputmode="decimal" placeholder="Amount you paid (optional)"></div>
+   <div class="row"><label for="utr">🔖 UTR / ID</label><input id="utr" maxlength="40" placeholder="Transaction ID (optional)"></div>
+   <button class="btn" id="paid" style="margin-top:6px">✔ I've paid</button>
+   <div class="msg" id="m4"></div>
+   <p class="note">QR payments are confirmed manually by our team.</p>
  </div></section>
 </main>
-<dialog id="ok"><div class="ok-ic">✓</div><h3>Payment Successful!</h3>
- <p>Thank you for your support ❤️<br><small id="txn"></small></p>
+<dialog id="ok"><div class="ok-ic">✓</div><h3>Thank you!</h3>
+ <p>Thank you for your support ❤️<br><small>We will confirm your payment manually.</small></p>
  <button class="btn" id="home">🏠 Go to Home</button></dialog>
 <script src="config.js"></script><script src="common.js"></script><script src="script.js"></script>
 </body></html>
