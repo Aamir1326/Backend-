@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Member – JMI Student Charity</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="members.css">
+</head><body>
+<nav class="side" id="side"></nav>
+<div class="scrim" id="scrim"></div>
+<header class="top"><button class="burger" id="burger" aria-label="Menu">☰</button><span class="brand">👥 Member</span><div class="avatar">👤</div></header>
+<main class="mwrap">
+ <a class="pback" href="members.html">← All members</a>
+ <article class="poster" id="poster" hidden>
+  <div class="ptop"><span class="lg">🎓</span><div><b>JAMIA MILLIA ISLAMIA</b><i>Tradition · Excellence · Progress</i></div></div>
+  <div class="pbody">
+   <div class="polaroid"><img id="mphoto" alt=""><span class="cap" id="mcap"></span></div>
+   <div>
+    <h1 class="pname" id="mname"></h1>
+    <div class="pill"><span>🎓</span><div><b id="mcourse"></b><small id="muni"></small></div></div>
+    <hr class="sep">
+    <p class="quote">👤 “<span id="mquote"></span>” 🤍</p>
+    <div class="about"><div><h3>🌿 About Me</h3><p id="mabout"></p></div><div class="flag"><i></i><span>🗼</span></div></div>
+   </div>
+  </div>
+  <div class="tiles"><div class="tile" id="t0"></div><div class="tile" id="t1"></div><div class="tile" id="t2"></div><a class="connect" id="mconnect" hidden>✉️ Let’s Connect →</a></div>
+  <div class="wave"></div>
+ </article>
+ <div class="card lockbox" id="lock" hidden><div style="font-size:50px">🔒</div><h2 style="justify-content:center">Locked</h2>
+  <p id="why" class="msg err"></p><p style="color:var(--mut)">Open the menu → Members and enter the 6-digit password.</p></div>
+</main>
+<script src="config.js"></script><script src="common.js"></script>
+<script>
+(async () => {
+  const g = id => document.getElementById(id), tk = sessionStorage.getItem("su_members");
+  const id = new URLSearchParams(location.search).get("id") || "";
+  const lock = why => { g("why").textContent = why || ""; g("lock").hidden = false; g("poster").hidden = true; };
+  if (!tk) return lock("No password entered yet.");
+  try {
+    const r = await fetch(CONFIG.API + "/members?t=" + encodeURIComponent(tk));
+    if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error("[" + r.status + "] " + (j.error || "server error")); }
+    const m = (await r.json()).members.find(x => x.id === id);
+    if (!m) return lock("Member not found.");
+    document.title = m.name + " – JMI Student Charity";
+    g("mname").textContent = m.name; g("mcourse").textContent = m.course || ""; g("muni").textContent = m.university || "";
+    g("mquote").textContent = m.quote || ""; g("mabout").textContent = m.about || ""; g("mcap").textContent = m.caption || "";
+    if (m.hasPhoto) { g("mphoto").alt = m.name; g("mphoto").src = CONFIG.API + "/members/photo/" + encodeURIComponent(m.id) + "?t=" + encodeURIComponent(tk); }
+    (m.tiles || []).slice(0, 3).forEach((t, i) => {
+      const box = g("t" + i), ic = document.createElement("div"), tx = document.createElement("div"), b = document.createElement("b"), s = document.createElement("small");
+      ic.className = "ic"; ic.textContent = t.icon || "⭐"; b.textContent = t.title || ""; s.textContent = t.text || ""; tx.append(b, s); box.append(ic, tx);
+    });
+    for (let i = (m.tiles || []).length; i < 3; i++) g("t" + i).remove();
+    if (m.connect && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m.connect)) { g("mconnect").href = "mailto:" + m.connect; g("mconnect").hidden = false; }
+    g("poster").hidden = false;
+  } catch (e) { sessionStorage.removeItem("su_members"); lock(e.message || "Could not reach server"); }
+})();
+</script></body></html>
