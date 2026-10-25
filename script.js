@@ -15,30 +15,39 @@ async function api(path, body) {
 }
 function say(id, t, ok) { const e = $(id); e.textContent = t; e.className = "msg " + (ok ? "ok" : "err"); }
 function busy(btn, on) { btn.disabled = on; }
-function show(n) { document.querySelectorAll(".page").forEach(p => p.classList.toggle("show", p.id === "p" + n)); window.scrollTo(0, 0); if (n >= 3 && Session.get()) Session.set({ step: n }); }
+function show(n) {
+  document.querySelectorAll(".page").forEach(p => p.classList.toggle("show", p.id === "p" + n));
+  window.scrollTo(0, 0);
+  if (n >= 3 && Session.get()) Session.set({ step: n });
+  if (n === 4) { $("qrimg").src = (CONFIG.QR_IMAGE || "qr.png") + "?v=" + Date.now(); }
+}
 
-/* Step 1: Send OTP */
+/* Step 1: name, email, phone (phone is NOT verified) -> email OTP */
 const emailOk = e => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e);
+const phoneOk = p => /^\+?\d{10,15}$/.test(p.replace(/[\s\-()]/g, ""));
 async function sendOtp() {
-  const name = $("name").value.trim(), email = $("email").value.trim();
+  const name = $("name").value.trim(), email = $("email").value.trim(), phone = $("phone").value.trim();
   if (name.length < 2) return say("m1", "Enter your name.");
   if (!emailOk(email)) return say("m1", "Enter a valid email address.");
+  if (!phoneOk(phone)) return say("m1", "Enter a valid phone number (10 to 15 digits).");
   busy($("sendOtp"), true); say("m1", "Sending OTP…", true);
-  try { await api("/send-otp", { name, email }); say("m1", "OTP sent. Check your inbox.", true); show(2); $("otp").focus(); }
+  try { await api("/send-otp", { name, email, phone }); say("m1", "OTP sent. Check your inbox.", true); show(2); $("otp").focus(); }
   catch (e) { say("m1", e.message); say("m2", e.message); }
   busy($("sendOtp"), false);
 }
 $("sendOtp").onclick = sendOtp;
 $("resend").onclick = async () => { await sendOtp(); };
 
-/* Step 2: Verify OTP */
+/* Step 2: Verify email OTP */
 $("verify").onclick = async () => {
   const otp = $("otp").value.trim();
   if (!/^\d{6}$/.test(otp)) return say("m2", "Enter the 6 digit code.");
   busy($("verify"), true); say("m2", "Verifying…", true);
   try {
     const r = await api("/verify-otp", { email: $("email").value.trim(), otp });
-    token = r.token; Session.set({ name: $("name").value.trim(), email: $("email").value.trim(), token, step: 3 }); say("m2", "Email verified ✔", true); show(3);
+    token = r.token;
+    Session.set({ name: $("name").value.trim(), email: $("email").value.trim(), phone: $("phone").value.trim(), token, step: 3 });
+    say("m2", "Email verified ✔", true); show(3);
   } catch (e) { say("m2", e.message); }
   busy($("verify"), false);
 };
@@ -55,52 +64,22 @@ $("sendC").onclick = async () => {
   busy($("sendC"), false);
 };
 
-/* Step 4: Payment (Razorpay Checkout; success only after server verification) */
-async function pay() {
-  const amount = Number($("amount").value);
-  if (!(amount >= 1)) return say("m4", "Enter an amount of at least ₹1.");
-  if (typeof Razorpay === "undefined") return say("m4", "Payment window did not load. Check your internet.");
-  say("m4", "Starting payment…", true);
+/* Step 4: QR only. "I've paid" saves a note for the admin (confirmed manually) */
+$("qrimg").onerror = () => say("m4", "QR image not found. Upload your QR as qr.png.");
+$("paid").onclick = async () => {
+  busy($("paid"), true); say("m4", "Saving…", true);
   try {
-    const o = await api("/payments/create-order", {
-      username: $("name").value.trim(), email: $("email").value.trim(), amount, token
-    });
-    const rz = new Razorpay({
-      key: o.keyId, order_id: o.orderId, amount: o.amount, currency: o.currency,
-      name: "Support Us", description: "Support our work",
-      prefill: { ...o.prefill, method: "upi" }, theme: { color: "#0f6b4f" },
-      handler: async resp => {
-        say("m4", "Verifying payment…", true);
-        try {
-          const v = await api("/payments/verify", resp);
-          if (v.status === "paid") {
-            $("txn").textContent = "Transaction ID: " + v.transactionId + " · Amount: ₹" + v.amount;
-            $("ok").showModal();
-          } else say("m4", v.message || "Payment is still pending.");
-        } catch (e) { say("m4", e.message); }
-      },
-      modal: { ondismiss: () => say("m4", "Payment cancelled.") }
-    });
-    rz.on("payment.failed", r => say("m4", (r.error && r.error.description) || "Payment failed."));
-    rz.open();
+    await api("/qr-paid", { name: $("name").value.trim(), email: $("email").value.trim(), amount: $("amount").value.trim(), utr: $("utr").value.trim(), token });
+    say("m4", "", true); $("ok").showModal();
   } catch (e) { say("m4", e.message); }
-}
-document.querySelectorAll("[data-pay]").forEach(b => b.onclick = pay);
-$("home").onclick = () => location.reload();
-
-/* Generate QR: shows your own QR photo (qr.png in this folder / GitHub repo) */
-$("genQr").onclick = () => {
-  $("qrimg").src = (CONFIG.QR_IMAGE || "qr.png") + "?v=" + Date.now();
-  $("m5").textContent = ""; show(5);
+  busy($("paid"), false);
 };
-$("qrimg").onerror = () => say("m5", "QR image not found. Upload your QR as qr.png.");
-$("back").onclick = () => show(4);
-$("paid").onclick = () => say("m5", "Thank you! We will confirm your payment manually.", true);
+$("home").onclick = () => location.reload();
 
 /* Already verified? Skip the OTP steps (e.g. coming back from the AI page) */
 (function () {
   const S = Session.get();
   if (!S) return;
-  $("name").value = S.name || ""; $("email").value = S.email || ""; token = S.token;
+  $("name").value = S.name || ""; $("email").value = S.email || ""; $("phone").value = S.phone || ""; token = S.token;
   show(Math.min(Math.max(S.step || 3, 3), 4));
 })();
