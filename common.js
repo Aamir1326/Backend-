@@ -21,7 +21,7 @@ const Session = {
     '<a href="AI.html"' + on("ai.html") + '>🤖 Talk with AI</a>' +
     '<a href="jmi.html"' + on("jmi.html") + '>🎓 JMI</a>' +
     '<a href="community.html"' + on("community.html") + '>👥 Community</a>' +
-    '<a href="' + (CONFIG.FRONTEND_DEV_URL || "#") + '" target="_blank" rel="noopener">💻 Frontend Developer ↗</a>' +
+     
     '<button class="nav" id="share">🔗 Share</button>' +
     '<a href="privacy.html"' + on("privacy.html") + '>🛡️ Privacy Policy</a>' +
     '<button class="nav" data-info="about">ℹ️ About</button>' +
