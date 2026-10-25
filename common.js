@@ -83,5 +83,5 @@ const Session = {
     $("dev").showModal();
   }
   $("devBtn").onclick = () => { closeMenu(); pinForm("👨‍💻 About Developer", "/dev-access", "su_dev", "developer.html"); };
-  $("memBtn").onclick = () => { closeMenu(); pinForm("👥 Members", "/members-access", "su_members", "members.html"); };
+  $("memBtn").onclick = () => { closeMenu(); pinForm("👥 Members", "/members-access", "su_members", "member.html"); };
 })();
