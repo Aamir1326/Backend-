@@ -15,6 +15,13 @@
 <script src="config.js"></script><script src="common.js"></script>
 <script>
 (async () => {
+  async function loadPhoto(img, id, tk, errEl) {
+    try {
+      const p = await fetch(CONFIG.API + "/members/photo/" + encodeURIComponent(id) + "?t=" + encodeURIComponent(tk));
+      if (!p.ok) { const j = await p.json().catch(() => ({})); throw new Error("[" + p.status + "] " + (j.error || "photo error")); }
+      img.src = URL.createObjectURL(await p.blob());
+    } catch (e) { errEl.textContent = "Photo problem: " + e.message; }
+  }
   const g = id => document.getElementById(id), tk = sessionStorage.getItem("su_members");
   const lock = why => { g("why").textContent = why || ""; g("lock").hidden = false; };
   if (!tk) return lock("No password entered yet.");
@@ -24,9 +31,10 @@
     const d = await r.json();
     d.members.forEach(m => {
       const a = document.createElement("a"); a.className = "mcard"; a.href = "member.html?id=" + encodeURIComponent(m.id);
-      if (m.hasPhoto) { const i = document.createElement("img"); i.alt = m.name; i.loading = "lazy"; i.src = CONFIG.API + "/members/photo/" + encodeURIComponent(m.id) + "?t=" + encodeURIComponent(tk); a.append(i); }
+      const pe = document.createElement("small"); pe.className = "msg err";
+      if (m.hasPhoto) { const i = document.createElement("img"); i.alt = m.name; a.append(i); loadPhoto(i, m.id, tk, pe); }
       const h = document.createElement("h3"); h.textContent = m.name; const s = document.createElement("small"); s.textContent = m.course || "";
-      a.append(h, s); g("grid").append(a);
+      a.append(h, s, pe); g("grid").append(a);
     });
   } catch (e) { sessionStorage.removeItem("su_members"); lock(e.message || "Could not reach server"); }
 })();
