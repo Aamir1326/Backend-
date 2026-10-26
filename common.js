@@ -19,6 +19,7 @@ const Session = {
     '<div class="logo"><div style="font-size:40px">💜</div><b>JMI Student Charity</b><small>Support Our Work</small></div>' +
     '<a href="index.html"' + on("index.html") + '>🏠 Home</a>' +
     '<a href="AI.html"' + on("ai.html") + '>🤖 Talk with AI</a>' +
+    '<a href="' + (CONFIG.CHAT_URL || "#") + '">💬 Chat</a>' +
     '<a href="jmi.html"' + on("jmi.html") + '>🎓 JMI</a>' +
     '<a href="community.html"' + on("community.html") + '>👥 Community</a>' +
      
