@@ -7,11 +7,11 @@
 <div class="scrim" id="scrim"></div>
 <header class="top"><button class="burger" id="burger" aria-label="Menu">☰</button><span class="brand">👥 Member</span><div class="avatar">👤</div></header>
 <main class="mwrap">
- <a class="pback" href="member.html">← All members</a>
+ <a class="pback" href="members.html">← All members</a>
  <article class="poster" id="poster" hidden>
   <div class="ptop"><span class="lg">🎓</span><div><b>JAMIA MILLIA ISLAMIA</b><i>Tradition · Excellence · Progress</i></div></div>
   <div class="pbody">
-   <div class="polaroid"><img id="mphoto" alt=""><span class="cap" id="mcap"></span></div>
+   <div class="polaroid"><img id="mphoto" alt=""><span class="cap" id="mcap"></span><span class="msg err" id="perr"></span></div>
    <div>
     <h1 class="pname" id="mname"></h1>
     <div class="pill"><span>🎓</span><div><b id="mcourse"></b><small id="muni"></small></div></div>
@@ -29,6 +29,13 @@
 <script src="config.js"></script><script src="common.js"></script>
 <script>
 (async () => {
+  async function loadPhoto(img, id, tk, errEl) {
+    try {
+      const p = await fetch(CONFIG.API + "/members/photo/" + encodeURIComponent(id) + "?t=" + encodeURIComponent(tk));
+      if (!p.ok) { const j = await p.json().catch(() => ({})); throw new Error("[" + p.status + "] " + (j.error || "photo error")); }
+      img.src = URL.createObjectURL(await p.blob());
+    } catch (e) { errEl.textContent = "Photo problem: " + e.message; }
+  }
   const g = id => document.getElementById(id), tk = sessionStorage.getItem("su_members");
   const id = new URLSearchParams(location.search).get("id") || "";
   const lock = why => { g("why").textContent = why || ""; g("lock").hidden = false; g("poster").hidden = true; };
@@ -41,7 +48,7 @@
     document.title = m.name + " – JMI Student Charity";
     g("mname").textContent = m.name; g("mcourse").textContent = m.course || ""; g("muni").textContent = m.university || "";
     g("mquote").textContent = m.quote || ""; g("mabout").textContent = m.about || ""; g("mcap").textContent = m.caption || "";
-    if (m.hasPhoto) { g("mphoto").alt = m.name; g("mphoto").src = CONFIG.API + "/members/photo/" + encodeURIComponent(m.id) + "?t=" + encodeURIComponent(tk); }
+    if (m.hasPhoto) { g("mphoto").alt = m.name; loadPhoto(g("mphoto"), m.id, tk, g("perr")); }
     (m.tiles || []).slice(0, 3).forEach((t, i) => {
       const box = g("t" + i), ic = document.createElement("div"), tx = document.createElement("div"), b = document.createElement("b"), s = document.createElement("small");
       ic.className = "ic"; ic.textContent = t.icon || "⭐"; b.textContent = t.title || ""; s.textContent = t.text || ""; tx.append(b, s); box.append(ic, tx);
