@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ConnectChat</title><link rel="stylesheet" href="app.css"></head><body>
+<div id="app">
+ <aside class="sb">
+  <div class="brand"><div class="lg">✈️</div><b>ConnectChat</b><small>Chat • Connect • Share</small></div>
+  <nav id="nav">
+   <button data-tab="chats" class="on"><span>💬</span>Chats<i id="nchats" hidden></i></button>
+   <button data-tab="contacts"><span>👥</span>Contacts</button>
+   <button data-tab="calls"><span>📞</span>Calls</button>
+   <button data-tab="profile"><span>👤</span>Profile</button>
+   <button data-tab="settings"><span>⚙️</span>Settings</button>
+   <button id="logout"><span>↪</span>Logout</button>
+  </nav>
+  <div class="promo"><div class="ph">📱💙📱</div><b>Stay Connected</b><p>With the people who matter ❤️</p></div>
+ </aside>
+ <div class="main">
+  <header class="tb">
+   <div class="sw"><input id="gs" placeholder="Search users or chats..." autocomplete="off"><div id="sres" hidden></div></div>
+   <button id="bell" title="Missed calls">🔔<i id="nbell" hidden></i></button><button id="meb" class="meb" title="Profile"></button>
+  </header>
+  <section class="panes" id="panes">
+   <div class="list"><div class="lh"><h2 id="lt">Chats</h2><button id="newchat" title="Find people">✎</button></div><div id="lb"></div></div>
+   <div class="chat" id="cp"></div>
+  </section>
+  <section class="cards">
+   <div class="ic"><h3>✈️ About ConnectChat</h3><p>A modern messaging app to connect with your friends, classmates and community.</p></div>
+   <div class="ic"><h3>🛡️ Your Privacy, Our Priority</h3><p>Messages are stored securely in MongoDB and protected in transit with HTTPS. They are not end-to-end encrypted. You control who sees your online status, and you can block, report or delete your account any time.</p></div>
+  </section>
+ </div>
+</div>
+<div id="callbox" hidden>
+ <div id="cin" hidden><div id="cin-av"></div><h2 id="cin-name"></h2><p id="cin-type"></p><div class="crow"><button class="cb red" id="c-rej">✖</button><button class="cb green" id="c-acc">✔</button></div></div>
+ <div id="cact" hidden>
+  <video id="rv" autoplay playsinline></video><div id="rav"></div>
+  <video id="lv" autoplay playsinline muted></video>
+  <div class="cinfo"><b id="cname"></b><span id="cstat">Calling…</span></div>
+  <div class="crow"><button class="cb" id="c-mute" title="Mute">🎤</button><button class="cb" id="c-cam" title="Camera">📷</button><button class="cb" id="c-flip" title="Switch camera">🔄</button><button class="cb red" id="c-end" title="End">📞</button></div>
+ </div>
+</div>
+<div id="toast" hidden></div>
+<input type="file" id="file" hidden>
+<script src="/socket.io/socket.io.js"></script><script src="app.js"></script>
+</body></html>
