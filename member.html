@@ -31,7 +31,7 @@
 (async () => {
   async function loadPhoto(img, id, tk, errEl) {
     try {
-      const p = await fetch(CONFIG.API + "/members/photo/" + encodeURIComponent(id), { headers: { Authorization: "Bearer " + tk } });
+      const p = await fetch(CONFIG.API + "/members/photo/" + encodeURIComponent(id) + "?t=" + encodeURIComponent(tk));
       if (!p.ok) { const j = await p.json().catch(() => ({})); throw new Error("[" + p.status + "] " + (j.error || "photo error")); }
       img.src = URL.createObjectURL(await p.blob());
     } catch (e) { errEl.textContent = "Photo problem: " + e.message; }
@@ -41,7 +41,7 @@
   const lock = why => { g("why").textContent = why || ""; g("lock").hidden = false; g("poster").hidden = true; };
   if (!tk) return lock("No password entered yet.");
   try {
-    const r = await fetch(CONFIG.API + "/members", { headers: { Authorization: "Bearer " + tk } });
+    const r = await fetch(CONFIG.API + "/members?t=" + encodeURIComponent(tk));
     if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error("[" + r.status + "] " + (j.error || "server error")); }
     const m = (await r.json()).members.find(x => x.id === id);
     if (!m) return lock("Member not found.");
