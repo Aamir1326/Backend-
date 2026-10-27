@@ -24,6 +24,7 @@ const Session = {
      
     '<button class="nav" id="share">🔗 Share</button>' +
     '<a href="privacy.html"' + on("privacy.html") + '>🛡️ Privacy Policy</a>' +
+    '<a href="https://server-production-6b45.up.railway.app/chat/login.html">💬 ConnectChat</a>' +
     '<button class="nav" data-info="about">ℹ️ About</button>' +
     '<button class="nav" data-info="contact">✉️ Contact</button>' +
     '<button class="nav" id="devBtn">👨‍💻 About Developer</button>' +
