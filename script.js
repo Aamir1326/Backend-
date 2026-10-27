@@ -7,7 +7,7 @@ async function api(path, body) {
   try {
     r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   } catch (e) {
-    throw new Error("Cannot reach server. Check your internet and try again.");
+    throw new Error("API network error: " + url + ". Check Railway deployment, ALLOWED_ORIGIN (CORS), and browser Network/Console for the exact cause.");
   }
   const d = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error((d.error || "Error " + r.status));
