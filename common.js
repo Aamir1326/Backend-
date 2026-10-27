@@ -19,7 +19,6 @@ const Session = {
     '<div class="logo"><div style="font-size:40px">💜</div><b>JMI Student Charity</b><small>Support Our Work</small></div>' +
     '<a href="index.html"' + on("index.html") + '>🏠 Home</a>' +
     '<a href="AI.html"' + on("ai.html") + '>🤖 Talk with AI</a>' +
-    '<a href="' + (CONFIG.CHAT_URL || "#") + '">💬 Chat</a>' +
     '<a href="jmi.html"' + on("jmi.html") + '>🎓 JMI</a>' +
     '<a href="community.html"' + on("community.html") + '>👥 Community</a>' +
      
@@ -64,15 +63,15 @@ const Session = {
   function pinForm(title, endpoint, key, dest) {
     $("dev").innerHTML =
       '<h3>' + title + '</h3>' +
-      '<p>Enter the 6-digit password.<br><small>Password chahiye? Admin se contact karo: ' + CONFIG.CONTACT + '</small></p>' +
-      '<input id="devPin" type="password" inputmode="numeric" maxlength="6" placeholder="6 digit password" autocomplete="off">' +
+      '<p>Enter the password.<br><small>Password chahiye? Admin se contact karo: ' + CONFIG.CONTACT + '</small></p>' +
+      '<input id="devPin" type="password" maxlength="64" placeholder="Password" autocomplete="off">' +
       '<div class="msg" id="devMsg"></div>' +
       '<button class="btn" id="devGo" style="margin-top:12px">Unlock</button>' +
       '<button class="lnk" id="devX">Close</button>';
     $("devX").onclick = () => $("dev").close();
     $("devGo").onclick = async () => {
       const pin = $("devPin").value.trim(), m = $("devMsg");
-      if (!/^\d{6}$/.test(pin)) { m.className = "msg err"; m.textContent = "Enter the 6 digit password."; return; }
+      if (pin.length < 6 || pin.length > 64) { m.className = "msg err"; m.textContent = "Enter the password (6 to 64 characters)."; return; }
       $("devGo").disabled = true; m.className = "msg ok"; m.textContent = "Checking…";
       try {
         const r = await fetch(CONFIG.API + endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin }) });
