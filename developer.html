@@ -34,10 +34,10 @@
   const lock = why => { g("why").textContent = why || ""; g("lock").hidden = false; g("devpage").hidden = true; };
   if (!tk) return lock("No password entered yet.");
   try {
-    const r = await fetch(CONFIG.API + "/dev-info?t=" + encodeURIComponent(tk));
+    const r = await fetch(CONFIG.API + "/dev-info", { headers: { Authorization: "Bearer " + tk } });
     if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error("[" + r.status + "] " + (j.error || "server error")); }
     const d = await r.json();
-    fetch(CONFIG.API + "/dev-photo?t=" + encodeURIComponent(tk)).then(async p => {
+    fetch(CONFIG.API + "/dev-photo", { headers: { Authorization: "Bearer " + tk } }).then(async p => {
       if (!p.ok) { const j = await p.json().catch(() => ({})); throw new Error("[" + p.status + "] " + (j.error || "photo error")); }
       g("photo").src = URL.createObjectURL(await p.blob());
     }).catch(e => { g("photo").hidden = true; g("photoErr").textContent = "Photo problem: " + e.message; });
